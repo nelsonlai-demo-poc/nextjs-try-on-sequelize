@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { register } from '../../../backend/service/auth';
+import { login } from '../../../backend/service/auth';
 
-interface RegisterRequest {
+interface LoginRequest {
     username: string;
     password: string;
 }
@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, resp: NextApiResponse) => {
         return;
     }
 
-    const { username, password } = req.body as RegisterRequest;
+    const { username, password } = req.body as LoginRequest;
     if (!username || username === '' || !password || password === '') {
         resp.status(200).end({
             code: -1,
@@ -22,12 +22,10 @@ const handler = async (req: NextApiRequest, resp: NextApiResponse) => {
     }
 
     try {
-        const dto = await register(username, password);
-        resp.status(200).json({ code: 0, message: 'success', data: dto });
-        return;
+        const token = await login(username, password);
+        resp.status(200).json({ code: 0, message: 'success', data: token });
     } catch (e) {
         resp.status(200).json({ code: -1, message: e });
-        return;
     }
 };
 
